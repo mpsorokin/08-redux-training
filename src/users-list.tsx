@@ -1,11 +1,10 @@
-import { useState } from "react";
+import {memo, useMemo, useState} from "react";
 import { useDispatch } from "react-redux";
-import {useAppSelector, User, UserRemoveSelectedAction, UserSelectedAction} from "./store.ts";
+import { useAppSelector, User, UserRemoveSelectedAction, UserSelectedAction } from "./store.ts";
 
 
 
 export function UserList() {
-    //const dispatch = useDispatch();
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
@@ -13,15 +12,15 @@ export function UserList() {
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 
-    const sortedUsers = ids
+    const sortedUsers = useMemo(() => ids
         .map((id) => entities[id])
         .sort((a, b) => {
-        if (sortType === "asc") {
-            return a.name.localeCompare(b.name);
-        } else {
-            return b.name.localeCompare(a.name);
-        }
-    });
+            if (sortType === "asc") {
+                return a.name.localeCompare(b.name);
+            } else {
+                return b.name.localeCompare(a.name);
+            }
+        }), [ids, entities, sortType]);
 
     return (
         <div className="flex flex-col items-center">
@@ -61,7 +60,9 @@ export function UserList() {
 
 export default UserList;
 
-function UserListItem({ user }: { user: User }) {
+// memo optimizes not ot rerender
+const UserListItem = memo(function UserListItem({ user }: { user: User }) {
+    console.log('render userlist item', user);
     const dispatch = useDispatch();
 
     const handleUserClick = () => {
@@ -75,7 +76,7 @@ function UserListItem({ user }: { user: User }) {
             <span className="hover:underline cursor-pointer">{user.name}</span>
         </li>
     );
-}
+});
 
 function SelectedUser({ user }: { user: User }) {
     const dispatch = useDispatch();
