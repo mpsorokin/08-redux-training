@@ -1,8 +1,8 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import {AppState, CounterId, DecrementAction, IncrementAction, store} from "./store.ts";
-import {useEffect, useReducer, useRef} from "react";
+import {AppState, CounterId, DecrementAction, IncrementAction, useAppSelector} from "./store.ts";
+import {useDispatch} from "react-redux";
 
 
 function App() {
@@ -19,9 +19,6 @@ function App() {
       <h1>Vite + React</h1>
         <Counter counterId="first" />
         <Counter counterId="second" />
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
@@ -29,6 +26,10 @@ function App() {
 const selectCounter = (state: AppState, counterId: CounterId) => state.counters[counterId];
 
 export function Counter({counterId}: {counterId: CounterId}) {
+    const dispatch = useDispatch();
+    const counterState = useAppSelector((state) => selectCounter(state, counterId));
+
+    /*
     // hack for component force update
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     console.log('render counter  ', counterId);
@@ -49,17 +50,17 @@ export function Counter({counterId}: {counterId: CounterId}) {
         });
 
         return unSubscribe;
-    }, [])
+    }, [])*/
 
-    const counterState = selectCounter(store.getState(), counterId);
+    //const counterState = selectCounter(store.getState(), counterId);
     return (
         <>
             <div className="card">
                 counter: {counterState?.counter}
-                <button onClick={() => store.dispatch({ type: "increment", payload: {counterId} } satisfies IncrementAction)}>
+                <button onClick={() => dispatch({ type: "increment", payload: {counterId} } satisfies IncrementAction)}>
                     Increment
                 </button>
-                <button onClick={() => store.dispatch({ type: "decrement", payload: {counterId} } satisfies DecrementAction)}>
+                <button onClick={() => dispatch({ type: "decrement", payload: {counterId} } satisfies DecrementAction)}>
                     Decrement
                 </button>
                 <p>
