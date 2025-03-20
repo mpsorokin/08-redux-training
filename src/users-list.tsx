@@ -1,32 +1,21 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import {useAppSelector, User, UserRemoveSelectedAction, UserSelectedAction} from "./store.ts";
 
-type UserId = string;
 
-type User = {
-    id: UserId;
-    name: string;
-    description: string;
-};
-
-const users: User[] = Array.from({ length: 3000 }, (_, index) => ({
-    id: `user${index + 11}`,
-    name: `User ${index + 11}`,
-    description: `Description for User ${index + 11}`,
-}));
 
 export function UserList() {
-    const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+    //const dispatch = useDispatch();
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
+    const ids = useAppSelector((state) => state.users.ids);
+    const entities = useAppSelector((state) => state.users.entities);
+    const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
 
-    const handleUserClick = (user: User) => {
-        setSelectedUser(user);
-    };
+    const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 
-    const handleBackButtonClick = () => {
-        setSelectedUser(undefined);
-    };
-
-    const sortedUsers = users.sort((a, b) => {
+    const sortedUsers = ids
+        .map((id) => entities[id])
+        .sort((a, b) => {
         if (sortType === "asc") {
             return a.name.localeCompare(b.name);
         } else {
@@ -55,7 +44,6 @@ export function UserList() {
                     <ul className="list-none">
                         {sortedUsers.map((user) => (
                             <UserListItem
-                                onClick={() => handleUserClick(user)}
                                 user={user}
                                 key={user.id}
                             />
@@ -65,7 +53,6 @@ export function UserList() {
             ) : (
                 <SelectedUser
                     user={selectedUser}
-                    onBackButtonClick={handleBackButtonClick}
                 />
             )}
         </div>
@@ -74,25 +61,34 @@ export function UserList() {
 
 export default UserList;
 
-function UserListItem({ user, onClick }: { user: User; onClick: () => void }) {
+function UserListItem({ user }: { user: User }) {
+    const dispatch = useDispatch();
+
+    const handleUserClick = () => {
+        dispatch({
+            type: "userSelected",
+            payload: { userId: user.id },
+        } satisfies UserSelectedAction)
+    };
     return (
-        <li key={user.id} className="py-1" onClick={onClick}>
+        <li key={user.id} className="py-2" onClick={handleUserClick}>
             <span className="hover:underline cursor-pointer">{user.name}</span>
         </li>
     );
 }
 
-function SelectedUser({
-    user,
-    onBackButtonClick,
-  }: {
-    user: User;
-    onBackButtonClick: () => void;
-}) {
+function SelectedUser({ user }: { user: User }) {
+    const dispatch = useDispatch();
+    const handleBackButtonClick = () => {
+        dispatch({
+            type: "userRemoveSelected",
+        } satisfies UserRemoveSelectedAction)
+    };
+
     return (
         <div className="flex flex-col items-center">
             <button
-                onClick={onBackButtonClick}
+                onClick={handleBackButtonClick}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded md"
             >
                 Back
