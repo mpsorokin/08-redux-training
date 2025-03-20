@@ -71,3 +71,6 @@ const reducer = (state = initialState, action: Action): State => {
 export const store = configureStore({
     reducer: reducer,
 })
+
+
+export type AppState = ReturnType<typeof store.getState>
