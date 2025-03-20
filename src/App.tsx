@@ -3,6 +3,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import {AppState, CounterId, DecrementAction, IncrementAction, useAppSelector} from "./store.ts";
 import {useDispatch} from "react-redux";
+import UserList from "./users-list.tsx";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <h1>Vite + React</h1>
         <Counter counterId="first" />
         <Counter counterId="second" />
+      <UserList />
     </>
   )
 }
