@@ -62,7 +62,7 @@ export default UserList;
 
 // memo optimizes not ot rerender
 const UserListItem = memo(function UserListItem({ user }: { user: User }) {
-    console.log('render userlist item', user);
+    //console.log('render userlist item', user);
     const dispatch = useDispatch();
 
     const handleUserClick = () => {
