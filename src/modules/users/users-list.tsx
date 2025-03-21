@@ -1,7 +1,8 @@
-import {memo, useMemo, useState} from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
+import { api } from "../../shared/api.ts";
 
 
 export function UserList() {
@@ -9,6 +10,12 @@ export function UserList() {
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
     const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
+
+    useEffect(() => {
+        api.getUsers().then(users => {
+            console.log(users);
+        })
+    }, [])
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 
