@@ -18,6 +18,7 @@ type UsersState = {
     entities: Record<UserId, User | undefined>;
     ids: UserId[];
     selectedUserId: UserId | undefined;
+    fetchUsersStatus: "idle" | "pending" | "success" | "failed";
 }
 
 
@@ -25,6 +26,7 @@ const initialUsersState: UsersState = {
     entities: {},
     ids: [],
     selectedUserId: undefined,
+    fetchUsersStatus: "idle",
 }
 
 
@@ -53,7 +55,10 @@ export const selectSortedUsers = createAppSelector(
 export const usersSlice = createSlice({
     name: "users",
     initialState: initialUsersState,
-    selectors: {},
+    selectors: {
+        selectIsFetchUsersPending: (state) => state.fetchUsersStatus === "pending",
+        selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
+    },
     reducers: {
         selected: (state, action: PayloadAction<{ userId: UserId }>) => {
             const { userId } = action.payload;
@@ -69,15 +74,20 @@ export const usersSlice = createSlice({
                 selectedUserId: undefined,
             }
         },
-        stored: (state, action: PayloadAction<{ users: User[] }>) => {
+        fetchUsersPending: (state) => {
+            state.fetchUsersStatus = "pending";
+        },
+        fetchUsersSuccess: (state, action: PayloadAction<{ users: User[] }>) => {
             const { users } = action.payload;
-            return {
-                ...state,
-                entities: users.reduce((acc, user) => {
-                    acc[user.id] = user;
-                    return acc;}, {} as Record<UserId, User>),
-                ids: users.map((user) => user.id),
-            }
+            state.fetchUsersStatus = "success";
+            state.entities = users.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+            }, {} as Record<UserId, User>);
+            state.ids = users.map((user) => user.id);
+        },
+        fetchUsersFailed: (state) => {
+            state.fetchUsersStatus = "failed";
         }
     }
 })

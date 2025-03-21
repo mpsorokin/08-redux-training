@@ -1,21 +1,29 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../store.ts";
+import { useAppDispatch, useAppSelector } from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
 import { api } from "../../shared/api.ts";
 
 
 export function UserList() {
+    const dispatch = useAppDispatch();
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
     const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
 
     useEffect(() => {
-        api.getUsers().then(users => {
-            console.log(users);
+        dispatch(usersSlice.actions.fetchUsersPending());
+        api.getUsers()
+            .then(users => {
+                dispatch(usersSlice.actions.fetchUsersSuccess({ users }));
+                console.log(users);
+            })
+            .catch((error) => {
+                console.log(error);
+                dispatch(usersSlice.actions.fetchUsersFailed());
         })
-    }, [])
+    }, [dispatch])
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 

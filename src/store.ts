@@ -10,7 +10,7 @@ export const store = configureStore({
     },
 })
 
-store.dispatch(usersSlice.actions.stored({ users: initialUsersList }));
+//store.dispatch(usersSlice.actions.stored({ users: initialUsersList }));
 
 export type AppState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
