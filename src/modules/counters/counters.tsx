@@ -1,6 +1,6 @@
 import { useAppSelector} from "../../store.ts";
 import { useDispatch } from "react-redux";
-import { CounterId, DecrementAction, IncrementAction, selectCounter } from "./counters.slice.ts";
+import { CounterId, decrementAction, incrementAction, selectCounter } from "./counters.slice.ts";
 
 //export const selectCounter = (state: AppState, counterId: CounterId) => state.counters[counterId];
 
@@ -38,12 +38,12 @@ export function Counter({counterId}: {counterId: CounterId}) {
                 counter: {counterState?.counter}
                 <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => dispatch({ type: "increment", payload: {counterId} } satisfies IncrementAction)}>
+                    onClick={() => dispatch(incrementAction({ counterId }))}>
                     Increment
                 </button>
                 <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => dispatch({ type: "decrement", payload: {counterId} } satisfies DecrementAction)}>
+                    onClick={() => dispatch(decrementAction({ counterId }))}>
                     Decrement
                 </button>
             </div>

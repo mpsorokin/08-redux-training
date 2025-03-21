@@ -24,6 +24,7 @@ export function UserList() {
             }
         }), [ids, entities, sortType]);
 
+
     return (
         <div className="flex flex-col items-center">
             {!selectedUser ? (
@@ -43,7 +44,7 @@ export function UserList() {
                         </button>
                     </div>
                     <ul className="list-none">
-                        {sortedUsers.map((user: User) => (
+                        {sortedUsers.map((user: any) => (
                             <UserListItem
                                 user={user}
                                 key={user.id}
