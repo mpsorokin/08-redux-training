@@ -1,7 +1,7 @@
 import {memo, useMemo, useState} from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../store.ts";
-import { selectSortedUsers, User, UserRemoveSelectedAction, UserSelectedAction } from "./users.slice.ts";
+import { User, usersSlice } from "./users.slice.ts";
 
 
 export function UserList() {
@@ -69,10 +69,7 @@ const UserListItem = memo(function UserListItem({ user }: { user: User }) {
     const dispatch = useDispatch();
 
     const handleUserClick = () => {
-        dispatch({
-            type: "userSelected",
-            payload: { userId: user.id },
-        } satisfies UserSelectedAction)
+        dispatch(usersSlice.actions.selected({ userId: user.id }))
     };
     return (
         <li key={user.id} className="py-2" onClick={handleUserClick}>
@@ -84,9 +81,7 @@ const UserListItem = memo(function UserListItem({ user }: { user: User }) {
 function SelectedUser({ user }: { user: User }) {
     const dispatch = useDispatch();
     const handleBackButtonClick = () => {
-        dispatch({
-            type: "userRemoveSelected",
-        } satisfies UserRemoveSelectedAction)
+        dispatch(usersSlice.actions.selectRemove())
     };
 
     return (

@@ -1,4 +1,4 @@
-import {AppState, createAppSelector} from "../../store.ts";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type UserId = string;
 
@@ -20,25 +20,6 @@ type UsersState = {
     selectedUserId: UserId | undefined;
 }
 
-export type UserSelectedAction = {
-    type: "userSelected";
-    payload: {
-        userId: UserId;
-    }
-}
-
-export type UserRemoveSelectedAction = {
-    type: "userRemoveSelected";
-}
-
-export type UsersStoredAction = {
-    type: "usersStored";
-    payload: {
-        users: User[];
-    }
-}
-
-type Action = UserSelectedAction | UserRemoveSelectedAction | UsersStoredAction;
 
 const initialUsersState: UsersState = {
     entities: {},
@@ -46,39 +27,6 @@ const initialUsersState: UsersState = {
     selectedUserId: undefined,
 }
 
-export const usersReducer = (state = initialUsersState, action: Action): UsersState => {
-    switch (action.type) {
-        case 'usersStored': {
-            const { users } = action.payload;
-            return {
-                ...state,
-                entities: users.reduce((acc, user) => {
-                    acc[user.id] = user;
-                    return acc;}, {} as Record<UserId, User>),
-                ids: users.map((user) => user.id),
-            }
-        }
-
-        case 'userSelected': {
-            const { userId } = action.payload;
-
-            return {
-                ...state,
-                selectedUserId: userId,
-            }
-        }
-
-        case 'userRemoveSelected': {
-            return {
-                ...state,
-                selectedUserId: undefined,
-            }
-        }
-
-        default:
-            return state;
-    }
-};
 
 /*
 export const selectSortedUsers = createAppSelector(
@@ -101,3 +49,35 @@ export const selectSortedUsers = createAppSelector(
             });
     }
 );*/
+
+export const usersSlice = createSlice({
+    name: "users",
+    initialState: initialUsersState,
+    selectors: {},
+    reducers: {
+        selected: (state, action: PayloadAction<{ userId: UserId }>) => {
+            const { userId } = action.payload;
+
+            return {
+                ...state,
+                selectedUserId: userId,
+            }
+        },
+        selectRemove: (state) => {
+            return {
+                ...state,
+                selectedUserId: undefined,
+            }
+        },
+        stored: (state, action: PayloadAction<{ users: User[] }>) => {
+            const { users } = action.payload;
+            return {
+                ...state,
+                entities: users.reduce((acc, user) => {
+                    acc[user.id] = user;
+                    return acc;}, {} as Record<UserId, User>),
+                ids: users.map((user) => user.id),
+            }
+        }
+    }
+})
