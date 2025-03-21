@@ -1,8 +1,8 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import {useAppDispatch, useAppSelector, useAppStore} from "../../store.ts";
+import { useAppDispatch, useAppSelector, useAppStore } from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
-import { api } from "../../shared/api.ts";
+import {fetchUsers} from "./model/fetch-users.ts";
 
 
 export function UserList() {
@@ -17,20 +17,7 @@ export function UserList() {
 
 
     useEffect(() => {
-        // hack to read actual value from store to prevent double api server call
-        const isIdle = usersSlice.selectors.selectIsFetchUsersIdle(appStore.getState());
-
-        if(!isIdle) return;
-        dispatch(usersSlice.actions.fetchUsersPending());
-        api.getUsers()
-            .then(users => {
-                dispatch(usersSlice.actions.fetchUsersSuccess({ users }));
-                console.log(users);
-            })
-            .catch((error) => {
-                console.log(error);
-                dispatch(usersSlice.actions.fetchUsersFailed());
-        })
+        dispatch(fetchUsers());
     }, [dispatch, appStore])
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
