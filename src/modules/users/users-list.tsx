@@ -1,18 +1,26 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../../store.ts";
+import {useAppDispatch, useAppSelector, useAppStore} from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
 import { api } from "../../shared/api.ts";
 
 
 export function UserList() {
     const dispatch = useAppDispatch();
+    const appStore = useAppStore();
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
     const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
 
+    const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUsersPending);
+
+
     useEffect(() => {
+        // hack to read actual value from store to prevent double api server call
+        const isIdle = usersSlice.selectors.selectIsFetchUsersIdle(appStore.getState());
+
+        if(!isIdle) return;
         dispatch(usersSlice.actions.fetchUsersPending());
         api.getUsers()
             .then(users => {
@@ -23,7 +31,7 @@ export function UserList() {
                 console.log(error);
                 dispatch(usersSlice.actions.fetchUsersFailed());
         })
-    }, [dispatch])
+    }, [dispatch, appStore])
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 
@@ -39,6 +47,9 @@ export function UserList() {
             }
         }), [ids, entities, sortType]);
 
+    if(isPending) {
+        return <div> ...Loading </div>
+    }
 
     return (
         <div className="flex flex-col items-center">
