@@ -1,4 +1,4 @@
-import { configureStore, createSelector } from '@reduxjs/toolkit'
+import {combineReducers, configureStore, createSelector} from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from "react-redux";
 
 export type UserId = string;
@@ -28,11 +28,6 @@ type CounterState = {
 type CountersState = Record<CounterId, CounterState | undefined>
 
 export type CounterId = string;
-
-type State = {
-    counters: CountersState;
-    users: UsersState;
-};
 
 export type UserSelectedAction = {
     type: "userSelected";
@@ -74,11 +69,6 @@ const initialUsersState: UsersState = {
     selectedUserId: undefined,
 }
 const initialCounterState: CounterState = { counter: 0 };
-const initialState: State = {
-  counters: {},
-    users: initialUsersState,
-}
-
 const initialCountersState: CountersState = {}
 
 const usersReducer = (state = initialUsersState, action: Action): UsersState => {
@@ -145,12 +135,10 @@ const countersReducer = (state = initialCountersState, action: Action): Counters
     }
 };
 
-const reducer = (state = initialState, action: Action): State => {
-    return {
-        users: usersReducer(state.users, action),
-        counters: countersReducer(state.counters, action),
-    }
-}
+const reducer = combineReducers({
+    users: usersReducer,
+    counters: countersReducer
+});
 
 export const store = configureStore({
     reducer: reducer,
