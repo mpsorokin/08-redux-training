@@ -1,7 +1,7 @@
 import {memo, useMemo, useState} from "react";
 import { useDispatch } from "react-redux";
-import { useAppSelector, User, UserRemoveSelectedAction, UserSelectedAction } from "./store.ts";
-
+import { useAppSelector } from "../../store.ts";
+import { selectSortedUsers, User, UserRemoveSelectedAction, UserSelectedAction } from "./users.slice.ts";
 
 
 export function UserList() {
@@ -11,6 +11,8 @@ export function UserList() {
     const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
 
     const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
+
+    //const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType));
 
     const sortedUsers = useMemo(() => ids
         .map((id) => entities[id])
@@ -41,7 +43,7 @@ export function UserList() {
                         </button>
                     </div>
                     <ul className="list-none">
-                        {sortedUsers.map((user) => (
+                        {sortedUsers.map((user: User) => (
                             <UserListItem
                                 user={user}
                                 key={user.id}
