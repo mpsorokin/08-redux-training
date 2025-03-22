@@ -19,6 +19,7 @@ type UsersState = {
     ids: UserId[];
     selectedUserId: UserId | undefined;
     fetchUsersStatus: "idle" | "pending" | "success" | "failed";
+    deleteUserStatus: "idle" | "pending" | "success" | "failed";
 }
 
 
@@ -27,6 +28,7 @@ const initialUsersState: UsersState = {
     ids: [],
     selectedUserId: undefined,
     fetchUsersStatus: "idle",
+    deleteUserStatus: "idle",
 }
 
 
@@ -58,6 +60,7 @@ export const usersSlice = createSlice({
     selectors: {
         selectUserById: (state, userId: UserId) => state.entities[userId],
         selectIsFetchUsersPending: (state) => state.fetchUsersStatus === "pending",
+        selectIsDeleteUserPending: (state) => state.deleteUserStatus === "pending",
         selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
     },
     reducers: {
@@ -89,6 +92,18 @@ export const usersSlice = createSlice({
         },
         fetchUsersFailed: (state) => {
             state.fetchUsersStatus = "failed";
-        }
+        },
+        deleteUserPending: (state) => {
+            state.deleteUserStatus = "pending";
+        },
+        deleteUserSuccess: (state, action: PayloadAction<{ userId: UserId }>) => {
+            state.deleteUserStatus = "success";
+
+            delete state.entities[action.payload.userId];
+            state.ids = state.ids.filter((id) => id !== action.payload.userId);
+        },
+        deleteUserFailed: (state) => {
+            state.deleteUserStatus = "failed";
+        },
     }
 })

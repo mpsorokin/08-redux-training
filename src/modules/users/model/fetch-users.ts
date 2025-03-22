@@ -1,12 +1,12 @@
 import { usersSlice } from "../users.slice.ts";
 import { AppThunk} from "../../../store.ts";
 
-export const fetchUsers = (): AppThunk =>
+export const fetchUsers = (refetch?: boolean): AppThunk =>
     (dispatch, getState, { api }) => {
     // hack to read actual value from store to prevent double api server call
     const isIdle = usersSlice.selectors.selectIsFetchUsersIdle(getState());
 
-    if(!isIdle) return;
+    if(!isIdle && !refetch) return;
     dispatch(usersSlice.actions.fetchUsersPending());
     api.getUsers()
         .then(users => {
