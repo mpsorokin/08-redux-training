@@ -56,6 +56,7 @@ export const usersSlice = createSlice({
     name: "users",
     initialState: initialUsersState,
     selectors: {
+        selectUserById: (state, userId: UserId) => state.entities[userId],
         selectIsFetchUsersPending: (state) => state.fetchUsersStatus === "pending",
         selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
     },

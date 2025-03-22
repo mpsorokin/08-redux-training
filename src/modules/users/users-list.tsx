@@ -2,7 +2,8 @@ import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppDispatch, useAppSelector, useAppStore } from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
-import {fetchUsers} from "./model/fetch-users.ts";
+import { fetchUsers } from "./model/fetch-users.ts";
+import {useNavigate} from "react-router-dom";
 
 
 export function UserList() {
@@ -11,16 +12,11 @@ export function UserList() {
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
-    const selectedUserId = useAppSelector((state) => state.users.selectedUserId);
-
     const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUsersPending);
-
 
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch, appStore])
-
-    const selectedUser = selectedUserId ? entities[selectedUserId] : undefined;
 
     //const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType));
 
@@ -40,36 +36,30 @@ export function UserList() {
 
     return (
         <div className="flex flex-col items-center">
-            {!selectedUser ? (
-                <div className="flex flex-col items-center justify-between">
-                    <div className="flex flex-row items-center">
-                        <button
-                            onClick={() => setSortType("asc")}
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
-                        >
-                            Asc
-                        </button>
-                        <button
-                            onClick={() => setSortType("desc")}
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
-                        >
-                            Desc
-                        </button>
-                    </div>
-                    <ul className="list-none">
-                        {sortedUsers.map((user: any) => (
-                            <UserListItem
-                                user={user}
-                                key={user.id}
-                            />
-                        ))}
-                    </ul>
+            <div className="flex flex-col items-center justify-between">
+                <div className="flex flex-row items-center">
+                    <button
+                        onClick={() => setSortType("asc")}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
+                    >
+                        Asc
+                    </button>
+                    <button
+                        onClick={() => setSortType("desc")}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
+                    >
+                        Desc
+                    </button>
                 </div>
-            ) : (
-                <SelectedUser
-                    user={selectedUser}
-                />
-            )}
+                <ul className="list-none">
+                    {sortedUsers.map((user: any) => (
+                        <UserListItem
+                            user={user}
+                            key={user.id}
+                        />
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }
@@ -80,9 +70,11 @@ export default UserList;
 const UserListItem = memo(function UserListItem({ user }: { user: User }) {
     //console.log('render userlist item', user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleUserClick = () => {
-        dispatch(usersSlice.actions.selected({ userId: user.id }))
+        //dispatch(usersSlice.actions.selected({ userId: user.id }))
+        navigate('/users/' + user.id);
     };
     return (
         <li key={user.id} className="py-2" onClick={handleUserClick}>
@@ -90,23 +82,3 @@ const UserListItem = memo(function UserListItem({ user }: { user: User }) {
         </li>
     );
 });
-
-function SelectedUser({ user }: { user: User }) {
-    const dispatch = useDispatch();
-    const handleBackButtonClick = () => {
-        dispatch(usersSlice.actions.selectRemove())
-    };
-
-    return (
-        <div className="flex flex-col items-center">
-            <button
-                onClick={handleBackButtonClick}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded md"
-            >
-                Back
-            </button>
-            <h2 className="text-3xl">{user.name}</h2>
-            <p className="text-xl">{user.description}</p>
-        </div>
-    );
-}
