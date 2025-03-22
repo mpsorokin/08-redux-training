@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import {fetchUsers} from "./model/fetch-users.ts";
+import {createSlice, ExtraArgument} from "../../shared/redux.ts";
 
 export type UserId = string;
 
@@ -64,20 +65,27 @@ export const usersSlice = createSlice({
         selectIsDeleteUserPending: (state) => state.deleteUserStatus === "pending",
         selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
     },
-    reducers: {
+    reducers: (creator) => ({
+        fetchUser: creator.asyncThunk<User, {userId: UserId}, {
+            extra: ExtraArgument,
+        }>((params, thunkAPI) => {
+            return thunkAPI.extra.api.getUser(params.userId);
+        }, {
+
+        }),
         deleteUserPending: (state) => {
             state.deleteUserStatus = "pending";
         },
-        deleteUserSuccess: (state, action: PayloadAction<{ userId: UserId }>) => {
+            deleteUserSuccess: (state, action: PayloadAction<{ userId: UserId }>) => {
             state.deleteUserStatus = "success";
 
             delete state.entities[action.payload.userId];
             state.ids = state.ids.filter((id) => id !== action.payload.userId);
         },
-        deleteUserFailed: (state) => {
+            deleteUserFailed: (state) => {
             state.deleteUserStatus = "failed";
         },
-    },
+    }),
     extraReducers: builder =>  {
         builder.addCase(fetchUsers.pending, (state) => {
             state.fetchUsersStatus = "pending";
