@@ -1,8 +1,8 @@
 import {UserId, usersSlice} from "./users.slice.ts";
-import { useAppSelector } from "../../store.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {deleteUser} from "./model/delete-user.ts";
+import {useAppSelector} from "../../shared/redux.ts";
 
 export function UserInfo() {
     const navigate = useNavigate();

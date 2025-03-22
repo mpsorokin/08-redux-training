@@ -1,6 +1,6 @@
 import { UserId, usersSlice } from "../users.slice.ts";
-import { AppThunk} from "../../../store.ts";
 import { fetchUsers } from "./fetch-users.ts";
+import {AppThunk} from "../../../shared/redux.ts";
 
 export const deleteUser = (userId: UserId): AppThunk =>
     async (dispatch, _, { api }) => {

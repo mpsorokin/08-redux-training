@@ -1,6 +1,7 @@
-import { useAppSelector} from "../../store.ts";
+
 import { useDispatch } from "react-redux";
 import { CounterId, decrementAction, incrementAction, selectCounter } from "./counters.slice.ts";
+import {useAppSelector} from "../../shared/redux.ts";
 
 //export const selectCounter = (state: AppState, counterId: CounterId) => state.counters[counterId];
 

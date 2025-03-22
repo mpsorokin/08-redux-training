@@ -1,10 +1,9 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAppDispatch, useAppSelector, useAppStore } from "../../store.ts";
 import { User, usersSlice } from "./users.slice.ts";
 import { fetchUsers } from "./model/fetch-users.ts";
-import {useNavigate} from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector, useAppStore } from "../../shared/redux.ts";
 
 export function UserList() {
     const dispatch = useAppDispatch();
