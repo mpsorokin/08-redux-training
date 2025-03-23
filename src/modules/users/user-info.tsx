@@ -20,9 +20,9 @@ export function UserInfo() {
         navigate("/users");
     };
 
-    const handleDeleteButtonClick = () => {
+    const handleDeleteButtonClick = async () => {
         //dispatch(deleteUser(userId));
-        deleteUser(userId);
+        await deleteUser(userId);
         navigate("/users");
     }
 
