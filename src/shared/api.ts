@@ -1,6 +1,13 @@
 import { z } from "zod";
+import {createApi, EndpointBuilder, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 const baseUrl = "http://localhost:3000";
 
+export const baseApi = createApi({
+    baseQuery: fetchBaseQuery({baseUrl}),
+    endpoints: () => ({ }),
+})
+
+/*
 const UserDtoSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -25,4 +32,4 @@ export const api = {
             method: "DELETE"
         }).then(res => res.json());
     }
-}
+}*/

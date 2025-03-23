@@ -4,6 +4,7 @@ import { User, usersSlice } from "./users.slice.ts";
 import { fetchUsers } from "./model/fetch-users.ts";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector, useAppStore } from "../../shared/redux.ts";
+import {usersApi} from "./api.ts";
 
 export function UserList() {
     const dispatch = useAppDispatch();
@@ -11,15 +12,28 @@ export function UserList() {
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
     const ids = useAppSelector((state) => state.users.ids);
     const entities = useAppSelector((state) => state.users.entities);
-    const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUsersPending);
+    //const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUsersPending);
 
-    useEffect(() => {
+    const { data: users, isLoading } = usersApi.useGetUsersQuery();
+    //console.log(users)
+
+    const sortedUsers = useMemo(() => {
+        return [...(users ?? [])]?.sort((a, b) => {
+            if (sortType === "asc") {
+                return a.name.localeCompare(b.name);
+            } else {
+                return b.name.localeCompare(a.name);
+            }
+        })
+    }, [sortType, users]);
+
+    /*useEffect(() => {
         dispatch(fetchUsers());
-    }, [dispatch, appStore])
+    }, [dispatch, appStore])*/
 
     //const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType));
 
-    const sortedUsers = useMemo(() => ids
+    /*const sortedUsers = useMemo(() => ids
         .map((id) => entities[id])
         .sort((a, b) => {
             if (sortType === "asc") {
@@ -27,9 +41,9 @@ export function UserList() {
             } else {
                 return b.name.localeCompare(a.name);
             }
-        }), [ids, entities, sortType]);
+        }), [ids, entities, sortType]);*/
 
-    if(isPending) {
+    if(isLoading) {
         return <div> ...Loading </div>
     }
 
